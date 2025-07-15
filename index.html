@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busfahren - Trinkspiel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Globaler Hauptmenü-Button -->
+    <button id="globalBackToStart" class="btn btn-secondary small-menu-btn" style="position:fixed;top:36px;right:36px;z-index:1001;display:none;">Zurück zum Hauptmenü</button>
+    <!-- Start Screen: Nur Mode-Selector -->
+    <div id="startScreen" class="screen active">
+        <div class="container" id="lobbyContainer" style="display:none;justify-content:center;align-items:center;min-height:100vh;gap:48px;">
+            <!-- Regeln-Box links -->
+            <div class="rules-box" id="rulesBox" style="min-width:300px;max-width:340px;">
+                <h3 class="arcade-section-title">📋 Regeln</h3>
+                <ul style="font-size:1.1rem;line-height:1.5;">
+                    <li><b>FRAGERUNDE:</b> Bei jeder falschen Antwort einen Schluck</li>
+                </ul>
+            </div>
+            <!-- Spielerlobby zentral -->
+            <div class="arcade-box" id="lobbyBox" style="margin:auto;max-width:420px;">
+                <h1 class="arcade-glow-title" id="lobbyHeadline" style="text-align:center;">Lobby – Gleich geht’s los!</h1>
+                <div class="arcade-subtitle" id="lobbySubline" style="text-align:center;margin-bottom:12px;">Schnappt euch ein Getränk, gebt euch einen coolen Namen und ladet eure Freunde ein!</div>
+                <div id="lobbyToast" class="arcade-toast" style="text-align:center;font-size:1.15rem;color:#ffe600;text-shadow:0 0 8px #ff00de,0 0 16px #00eaff;margin-bottom:18px;min-height:28px;">Auf einen feuchtfröhlichen Abend!</div>
+                <div style="display:flex;justify-content:center;gap:8px;margin-bottom:16px;">
+                    <input type="text" id="playerNameInput" placeholder="Spielername" maxlength="20" class="arcade-input" style="font-size:1.1rem;padding:10px 16px;border-radius:8px;border:none;">
+                    <button id="addPlayerBtn" class="arcade-btn">+</button>
+                    <button id="removePlayerBtn" class="arcade-btn">-</button>
+                </div>
+                <div id="avatarSelectGallery" style="display:flex;justify-content:center;gap:14px;margin-bottom:18px;"></div>
+                <div id="lobbyPlayerAvatars" style="display:flex;justify-content:center;gap:16px;margin-bottom:18px;"></div>
+                <div style="text-align:center;margin-top:24px;">
+                    <button id="startGameBtn" class="arcade-btn">Spiel starten</button>
+                </div>
+            </div>
+            <!-- Spielerliste rechts -->
+            <div class="arcade-box" id="playersListBox" style="min-width:220px;max-width:260px;">
+                <h3 class="arcade-section-title" style="text-align:center;">Spieler</h3>
+                <ul id="playersListLobby" style="list-style:none;padding:0;margin-bottom:0;text-align:center;"></ul>
+            </div>
+        </div>
+        <!-- Mode-Selector bleibt wie gehabt -->
+        <div class="container" id="modeSelectContainer" style="justify-content:center;align-items:center;min-height:100vh;">
+            <div class="mode-select-ratchet" style="display:flex;flex-direction:column;align-items:center;gap:32px;margin-top:32px;">
+                <h1 class="arcade-glow-title" style="font-size:2.7rem;letter-spacing:0.13em;text-transform:uppercase;font-weight:900;margin-bottom:0.5em;color:#fff;text-shadow:0 0 12px #00eaff,0 0 24px #ff00de,0 0 8px #fff;">BEREIT FÜR EIN SPIEL</h1>
+                <div style="display:flex;gap:32px;">
+                    <button id="offlineModeBtn" class="mode-btn ratchet-btn arcade-btn" style="font-size:2rem;padding:32px 64px;min-width:200px;letter-spacing:0.1em;">OFFLINE</button>
+                    <button id="onlineModeBtn" class="mode-btn ratchet-btn arcade-btn" style="font-size:2rem;padding:32px 64px;min-width:200px;letter-spacing:0.1em;" disabled>ONLINE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+        <div class="container">
+            <header class="game-header">
+                <h2>Willkommen, <span id="playerName">Spieler</span>!</h2>
+            </header>
+            <div class="game-content">
+                <!-- Platzhalter-Box entfernt -->
+            </div>
+            <div class="game-navigation">
+                <button id="backToStart" class="btn btn-secondary back-to-start-btn">Zurück zum Hauptmenü</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="questionScreen" class="screen" style="display:none;">
+        <div class="container" style="justify-content:center;align-items:center;min-height:100vh;display:flex;flex-direction:row;gap:48px;">
+            <div class="arcade-box" id="rulesBox" style="min-width:260px;max-width:320px;align-self:center;">
+                <h3 class="arcade-section-title">📋 Regeln</h3>
+                <ul id="questionRules" style="font-size:1.08rem;line-height:1.6;margin-bottom:0;"></ul>
+            </div>
+            <div class="centerBox" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:340px;">
+                <h1 class="arcade-glow-title" style="font-size:2.2rem;letter-spacing:0.13em;text-transform:uppercase;font-weight:900;margin-bottom:0.5em;color:#fff;text-shadow:0 0 12px #00eaff,0 0 24px #ff00de,0 0 8px #fff;">Busfahren</h1>
+                <div class="arcade-box" style="margin:auto;max-width:420px;text-align:center;">
+                    <h2 class="arcade-section-title" id="questionTitle">Fragerunde</h2>
+                    <div id="questionArea">
+                        <div id="questionText" style="font-size:1.3rem;font-weight:700;margin-bottom:16px;">Rot oder Schwarz?</div>
+                        <div id="cardDeckContainer" style="display:flex;justify-content:center;margin-bottom:24px;">
+                            <div class="card-flip" id="cardFlip">
+                                <div class="card-inner">
+                                    <div class="card-front">
+                                        <!-- Vorderseite: Platzhalter, wird per JS ersetzt -->
+                                    </div>
+                                    <div class="card-back">
+                                        <!-- Rückseite: SVG-Design -->
+                                        <svg width="80" height="120" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="2" y="2" width="76" height="116" rx="12" fill="#181a2a" stroke="#00eaff" stroke-width="3"/>
+                                            <rect x="10" y="10" width="60" height="100" rx="8" fill="#22223a" stroke="#ff00de" stroke-width="2"/>
+                                            <circle cx="40" cy="60" r="18" fill="none" stroke="#00eaff" stroke-width="2.5"/>
+                                            <text x="40" y="60" text-anchor="middle" alignment-baseline="middle" font-size="22" font-family="Inter, Arial, sans-serif" fill="#ff00de" font-weight="bold" style="letter-spacing:2px;">★</text>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="answer-btn-row">
+                            <button id="btnRed" class="arcade-btn">Rot</button>
+                            <button id="btnBlack" class="arcade-btn">Schwarz</button>
+                            <button id="btnHigher" class="arcade-btn" style="display:none;">Höher</button>
+                            <button id="btnLower" class="arcade-btn" style="display:none;">Tiefer</button>
+                            <button id="btnEqual" class="arcade-btn" style="display:none;">Gleich</button>
+                            <button id="btnInside" class="arcade-btn" style="display:none;">Innerhalb</button>
+                            <button id="btnOutside" class="arcade-btn" style="display:none;">Außerhalb</button>
+                            <button id="btnHerz" class="arcade-btn" style="display:none;">Herz</button>
+                            <button id="btnPik" class="arcade-btn" style="display:none;">Pik</button>
+                            <button id="btnKreuz" class="arcade-btn" style="display:none;">Kreuz</button>
+                            <button id="btnKaro" class="arcade-btn" style="display:none;">Karo</button>
+                        </div>
+                        <div id="cardReveal" style="margin:24px 0;font-size:2.2rem;min-height:48px;"></div>
+                        <div id="questionFeedback" style="font-size:1.2rem;font-weight:700;min-height:32px;"></div>
+                    </div>
+                    <div id="playerHand" style="display:flex;justify-content:center;gap:8px;margin-top:24px;"></div>
+                    <button id="startPyramidBtn" class="arcade-btn" style="display:none;margin:32px auto 0 auto;font-size:1.5rem;padding:18px 48px;letter-spacing:0.08em;">Abfahrt</button>
+                </div>
+            </div>
+            <div class="arcade-box" id="playersListBox" style="min-width:220px;max-width:260px;align-self:center;">
+                <h3 class="arcade-section-title" style="text-align:center;">Spieler</h3>
+                <ul id="playersListGame" style="list-style:none;padding:0;margin-bottom:0;text-align:center;"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="pyramidScreen" class="screen" style="display:none;">
+        <div class="container" style="justify-content:center;align-items:center;min-height:100vh;display:flex;flex-direction:row;gap:48px;">
+            <div class="arcade-box" id="rulesBox" style="min-width:260px;max-width:320px;align-self:center;">
+                <h3 class="arcade-section-title">📋 Regeln</h3>
+                <ul id="pyramidRules" style="font-size:1.08rem;line-height:1.6;margin-bottom:0;"></ul>
+            </div>
+            <div class="centerBox" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:340px;">
+                <h1 id="pyramidHeadline" class="arcade-glow-title" style="font-size:2.3rem;letter-spacing:0.13em;text-transform:uppercase;font-weight:900;margin-bottom:0.2em;color:#fff;text-shadow:0 0 12px #00eaff,0 0 24px #ff00de,0 0 8px #fff;">Abfahrt</h1>
+                <div id="pyramidSubline" style="font-size:1.18rem;color:#00eaff;text-align:center;margin-bottom:18px;">Jetzt wird verteilt! Wer die Karte hat, darf Schlucke ansagen. Viel Spaß und trinkt verantwortungsvoll!</div>
+                <div id="pyramidContainer" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin:auto;"></div>
+                <button id="startBusfahrenBtn" class="arcade-btn" style="display:none;margin:32px auto 0 auto;font-size:1.5rem;padding:18px 48px;letter-spacing:0.08em;">JETZT WIRD GEFAHREN</button>
+            </div>
+            <div class="arcade-box" id="playersListBox" style="min-width:220px;max-width:260px;align-self:center;">
+                <h3 class="arcade-section-title" style="text-align:center;">Spieler</h3>
+                <ul id="playersListPyramid" style="list-style:none;padding:0;margin-bottom:0;text-align:center;"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="busfahrenScreen" class="screen" style="display:none;">
+        <div class="container" style="justify-content:center;align-items:center;min-height:100vh;display:flex;flex-direction:row;gap:48px;">
+            <div class="arcade-box" id="rulesBox" style="min-width:260px;max-width:320px;align-self:center;">
+                <h3 class="arcade-section-title">📋 Regeln</h3>
+                <ul id="busfahrenRules" style="font-size:1.08rem;line-height:1.6;margin-bottom:0;"></ul>
+            </div>
+            <div class="centerBox" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:340px;">
+                <h1 id="busfahrenHeadline" class="arcade-glow-title" style="font-size:2.3rem;letter-spacing:0.13em;text-transform:uppercase;font-weight:900;margin-bottom:0.2em;color:#fff;text-shadow:0 0 12px #00eaff,0 0 24px #ff00de,0 0 8px #fff;">Busfahren</h1>
+                <div id="busfahrenSubline" style="font-size:1.18rem;color:#00eaff;text-align:center;margin-bottom:18px;">Der Busfahrer muss jetzt die letzte Challenge meistern!</div>
+                <div id="busfahrenContent" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin:auto;"></div>
+            </div>
+            <div class="arcade-box" id="playersListBox" style="min-width:220px;max-width:260px;align-self:center;">
+                <h3 class="arcade-section-title" style="text-align:center;">Spieler</h3>
+                <ul id="playersListBusfahren" style="list-style:none;padding:0;margin-bottom:0;text-align:center;"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="state.js"></script>
+    <script src="game.js"></script>
+    <script src="utils.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
